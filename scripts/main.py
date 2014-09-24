@@ -1,5 +1,4 @@
 __author__ = 'ambell'
-
 #import modules
 #import arcpy
 import os
@@ -10,16 +9,35 @@ from local_vars import *
 import functions
 from functions import *
 
+state = arcpy.GetParameterAsText(0)
+pm = arcpy.GetParameterAsText(1)
+twnshp = arcpy.GetParameterAsText(2)
+twnshp_frac = arcpy.GetParameterAsText(3)
+twnshp_dir = arcpy.GetParameterAsText(4)
+rangeship = arcpy.GetParameterAsText(5)
+rangeship_frac = arcpy.GetParameterAsText(6)
+rangeship_dir = arcpy.GetParameterAsText(7)
 
-# Select TRS_squares that are in correct county
-# Not sure if all data records will have county info so make this optional
-# quick way to subset TRS to search for match
-test = select_trs_by_county('Lake')
+TRS_input = (state, pm, twnshp, twnshp_frac, twnshp_dir, rangeship, rangeship_frac, rangeship_dir)
 
-print test
+arcpy.AddMessage(TRS_input)
 
-# Search TRS_squares (either full or subset from county selection) for partial match with input trs data
-# Need to include matching with partial or incomplete data - ie flag with errors
-# create error list for multiple partial matches (ie same trs from multiple meridians)
+all_tr = field_2_list(PLSS_township, 'PLSSID')
 
+pFID = partial_FID(TRS_input)
+
+arcpy.AddMessage(pFID)
+
+match = matches(pFID, all_tr)
+
+arcpy.AddMessage(match)
+
+#Turns township file into feature layer for selection
+arcpy.MakeFeatureLayer_management(PLSS_township, 'Township_lyr')
+
+# for each potential match in match list -> add to selection
+for m in match:
+	arcpy.SelectLayerByAttribute_management('Township_lyr', 'ADD_TO_SELECTION', '"PLSSID"' + '=' + "'" + m + "'")
+
+arcpy.CopyFeatures_management('Township_lyr', os.path.join(temp, "Selection"))
 
