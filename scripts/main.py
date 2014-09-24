@@ -1,20 +1,10 @@
 __author__ = 'ambell'
 
 #import modules
-import arcpy
+#import arcpy
 import os
-
-#file paths
-trs = "some_string"
-
-counties = r"county_path"
-
-TRS_squares = r"trs_squares"
-
-
-
-# parse trs inputs into categories
-
+import local_vars
+from local_vars import *
 
 
 # Select TRS_squares that are in correct county
