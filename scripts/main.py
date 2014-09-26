@@ -1,45 +1,42 @@
 __author__ = 'ambell'
 #import modules
-import arcpy
-import os
-
-import local_vars
 from local_vars import *
-
-import functions
 from functions import *
 
 try:
-	"""#TODO: get parameters in a loop?
-	state = arcpy.GetParameterAsText(0)
-	pm = arcpy.GetParameterAsText(1)
-	twnshp = arcpy.GetParameterAsText(2)
-	twnshp_frac = arcpy.GetParameterAsText(3)
-	twnshp_dir = arcpy.GetParameterAsText(4)
-	rangeship = arcpy.GetParameterAsText(5)
-	rangeship_frac = arcpy.GetParameterAsText(6)
-	rangeship_dir = arcpy.GetParameterAsText(7)
-	section_num = arcpy.GetParameterAsText(8)
-	PLSS_file = arcpy.GetParameterAsText(9)
-
-
-	TRS_input = (state, pm, twnshp, twnshp_frac, twnshp_dir, rangeship, rangeship_frac, rangeship_dir, section_num)"""
 
 	# call TRS class for input parameters
-	input_parameters = TRSclass(state=arcpy.GetParameterAsText(0), county=arcpy.GetParameterAsText(1),
-	                      pm=arcpy.GetParameterAsText(2),t=arcpy.GetParameterAsText(3),
-	                      t_dir=arcpy.GetParameterAsText(4), r=arcpy.GetParameterAsText(5),
-	                      r_dir=arcpy.GetParameterAsText(6), s=arcpy.GetParameterAsText(7))
+	input_parameters = TRSclass(state=input_parameter(0), county=input_parameter(1),
+	                      pm=input_parameter(2),t=input_parameter(3),
+	                      t_dir=input_parameter(4), r=input_parameter(5),
+	                      r_dir=input_parameter(6), s=input_parameter(7))
 
-	arcpy.AddMessage(input_parameters.state)
 
-	all_tr = field_2_list(PLSS_sections, TRS_ID_fieldname)
+	arcpy.AddMessage("Creating wildcard search FID from inputs.....")
 
-	pFID = partial_FID(TRS_input)
+	pFID = partial_FID(input_parameters)
 
-	arcpy.AddMessage(pFID)
+	arcpy.AddMessage("Wildcard: %s" %pFID)
 
-	match = matches(pFID, all_tr)
+	PLSS_file = arcpy.GetParameterAsText(8)
+
+
+	#if county info available call select features to shorten list
+	if input_parameters.county != None:
+		county_sel = arcpy.SelectLayerByAttribute_management("CA_Counties", "NEW_SELECTION", '"County_NAME"' + '=' + "'"+ input_parameters.county + "'" )
+
+		trs_sub = arcpy.SelectLayerByLocation_management(PLSS_file, 'INTERSECT', county_sel)
+
+		trs_searchlist = field_2_list(trs_sub, TRS_ID_fieldname)
+
+		#clears selections
+		arcpy.SelectLayerByAttribute_management(PLSS_file, "CLEAR_SELECTION")
+		arcpy.SelectLayerByAttribute_management("CA_Counties", "CLEAR_SELECTION")
+
+	else:
+		trs_searchlist = field_2_list(PLSS_sections, TRS_ID_fieldname)
+
+	match = matches(pFID, trs_searchlist)
 
 	arcpy.AddMessage("Number of Matches: %s" %len(match))
 	arcpy.AddMessage(match)
@@ -50,9 +47,8 @@ try:
 		arcpy.SelectLayerByAttribute_management(PLSS_file, 'ADD_TO_SELECTION', '"' + TRS_ID_fieldname + '"' + '=' + "'" + m + "'")
 
 	mxd = arcpy.mapping.MapDocument('CURRENT')
-	arcpy.AddMessage(mxd)
 	df = arcpy.mapping.ListDataFrames(mxd, "Layers")[0]
-	arcpy.AddMessage(df)
+	arcpy.AddMessage("Zooming to selection")
 	df.zoomToSelectedFeatures()
 	arcpy.RefreshActiveView()
 
