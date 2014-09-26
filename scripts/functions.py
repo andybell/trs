@@ -27,8 +27,8 @@ def field_2_list(table, field):
 		return sorted({row[0] for row in cursor})
 
 
-def partial_FID(TRS_truple): #TRS_truple  = (state, pm, twnshp, twnshp_frac, twnshp_dir, rangeship, rangeship_frac, rangeship_dir)
-	FID_template = '.'*15
+def partial_FID(TRS_truple): #TRS_truple  = (state, pm, twnshp, twnshp_frac, twnshp_dir, rangeship, rangeship_frac, rangeship_dir, section_num)
+	FID_template = '.'*20
 	FID_list = list(FID_template)
 	if TRS_truple[0] != '':
 		FID_list[0:2] = TRS_truple[0]
@@ -53,6 +53,9 @@ def partial_FID(TRS_truple): #TRS_truple  = (state, pm, twnshp, twnshp_frac, twn
 
 	if TRS_truple[7] != '':
 		FID_list[13:14] = TRS_truple[7]
+
+	if TRS_truple[8] != '':
+		FID_list[17:19] = TRS_truple[8]
 
 	FID = "".join(FID_list)
 	return FID
