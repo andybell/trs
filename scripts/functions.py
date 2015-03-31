@@ -58,7 +58,7 @@ def partial_FID(trs_class):
 	if trs_class.s is None:
 		trs_class.s = '..'
 	else:
-		trs_class.s = check_lenth(trs_class.s, 2)
+		trs_class.s = check_length(trs_class.s, 2)
 
 	# CA 14 008 0 S 022 0 W 0 SN 06 0 (example of FID format)
 	wild = (trs_class.state + trs_class.pm + trs_class.t + trs_class.t_frac + trs_class.t_dir+ trs_class.r
@@ -87,6 +87,7 @@ def check_length(class_elm, field_length):
 		return '00' + class_elm
 	else:
 		print("Error: input length does not match field type")
+		return '.' * field_length
 
 
 
