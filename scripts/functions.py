@@ -41,18 +41,24 @@ def partial_FID(trs_class):
 		trs_class.pm = '..'
 	if trs_class.t is None:
 		trs_class.t = '...'
+	else:
+		trs_class.t = check_length(trs_class.t, 3)
 	if trs_class.t_frac is None:
 		trs_class.t_frac = '.'
 	if trs_class.t_dir is None:
 		trs_class.t_dir = '.'
 	if trs_class.r is None:
 		trs_class.r = '...'
+	else:
+		trs_class.r = check_length(trs_class.r, 3)
 	if trs_class.r_frac is None:
 		trs_class.r_frac = '.'
 	if trs_class.r_dir is None:
 		trs_class.r_dir = '.'
 	if trs_class.s is None:
 		trs_class.s = '..'
+	else:
+		trs_class.s = check_lenth(trs_class.s, 2)
 
 	# CA 14 008 0 S 022 0 W 0 SN 06 0 (example of FID format)
 	wild = (trs_class.state + trs_class.pm + trs_class.t + trs_class.t_frac + trs_class.t_dir+ trs_class.r
@@ -72,6 +78,16 @@ def matches(partial_FID, FID_list):
 
 
 # TODO: function that checks length of input and adds zeros if not right length for field
+def check_length(class_elm, field_length):
+	if len(class_elm) == field_length:
+		return class_elm
+	elif len(class_elm) == field_length - 1:
+		return '0' + class_elm
+	elif len(class_elm) == field_length - 2:
+		return '00' + class_elm
+	else:
+		print("Error: input length does not match field type")
+
 
 
 def select_trs_by_county(county_name):
