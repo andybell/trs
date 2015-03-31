@@ -1,5 +1,6 @@
 __author__ = 'ambell'
 
+
 class TRSclass:
 	"""class for township range section data with defaults set to None """""
 

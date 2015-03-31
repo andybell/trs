@@ -1,7 +1,7 @@
-import os
 import arcpy
 import re
 import local_vars
+
 
 class TRSclass:
 	"""class for township range section data with defaults set to None. t = township, r = range, s = section"""""
@@ -26,10 +26,12 @@ def input_parameter(i):
 		value = None
 	return value
 
+
 # returns sorted list of values from an attribute table
 def field_2_list(table, field):
 	with arcpy.da.SearchCursor(table, [field]) as cursor:
 		return sorted({row[0] for row in cursor})
+
 
 # Creates a partial TRS match for use in a regular expression. Periods are wild character values
 def partial_FID(trs_class):
@@ -52,11 +54,12 @@ def partial_FID(trs_class):
 	if trs_class.s is None:
 		trs_class.s = '..'
 
-	#CA 14 008 0 S 022 0 W 0 SN 06 0 (example of FID format)
+	# CA 14 008 0 S 022 0 W 0 SN 06 0 (example of FID format)
 	wild = (trs_class.state + trs_class.pm + trs_class.t + trs_class.t_frac + trs_class.t_dir+ trs_class.r
 	        + trs_class.r_frac + trs_class.r_dir + '...' + trs_class.s + '.')
 
 	return wild.upper()
+
 
 # returns list of TRS IDs that match the partial input using a regular expression match
 def matches(partial_FID, FID_list):
@@ -68,23 +71,22 @@ def matches(partial_FID, FID_list):
 	return potential_matches
 
 
-#TODO: function that checks length of input and adds zeros if not right length for field
-
+# TODO: function that checks length of input and adds zeros if not right length for field
 
 
 def select_trs_by_county(county_name):
-	#make a layer from the feature class of the input county selection
+	# make a layer from the feature class of the input county selection
 	arcpy.MakeFeatureLayer_management(local_vars.counties, 'county_selection', '"County_NAME"' + '=' + "'"+ county_name + "'")
 
-	#make a layer for the TRS feature
+	# make a layer for the TRS feature
 	arcpy.MakeFeatureLayer_management(local_vars.PLSS_sections, 'TRS_All')
 
-	#select features that intersect with the county selection layer
+	# select features that intersect with the county selection layer
 	arcpy.SelectLayerByLocation_management('TRS_All', 'INTERSECT', 'county_selection')
 
-	#copy selected features to new feature class
-	#arcpy.CopyFeatures_management('TRS_All', os.path.join(local_vars.temp, 'TRS_subset'))
+	# copy selected features to new feature class
+	# arcpy.CopyFeatures_management('TRS_All', os.path.join(local_vars.temp, 'TRS_subset'))
 
-	#return TRS IDs as list
+	# return TRS IDs as list
 	return field_2_list('TRS_All', local_vars.TRS_ID_fieldname)
 

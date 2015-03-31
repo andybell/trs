@@ -1,5 +1,5 @@
 __author__ = 'ambell'
-#import modules
+# import modules
 from local_vars import *
 from functions import *
 
@@ -11,7 +11,6 @@ try:
 	                      t_dir=input_parameter(4), r=input_parameter(5),
 	                      r_dir=input_parameter(6), s=input_parameter(7))
 
-
 	arcpy.AddMessage("Creating wildcard search FID from inputs.....")
 
 	pFID = partial_FID(input_parameters)
@@ -20,8 +19,7 @@ try:
 
 	PLSS_file = arcpy.GetParameterAsText(8)
 
-
-	#if county info available call select features to shorten list
+	# if county info available call select features to shorten list
 	if input_parameters.county != None:
 		county_sel = arcpy.SelectLayerByAttribute_management("CA_Counties", "NEW_SELECTION", '"County_NAME"' + '=' + "'"+ input_parameters.county + "'" )
 
@@ -29,7 +27,7 @@ try:
 
 		trs_searchlist = field_2_list(trs_sub, TRS_ID_fieldname)
 
-		#clears selections
+		# clears selections
 		arcpy.SelectLayerByAttribute_management(PLSS_file, "CLEAR_SELECTION")
 		arcpy.SelectLayerByAttribute_management("CA_Counties", "CLEAR_SELECTION")
 
