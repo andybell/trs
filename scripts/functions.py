@@ -77,7 +77,7 @@ def matches(partial_FID, FID_list):
 	return potential_matches
 
 
-# TODO: function that checks length of input and adds zeros if not right length for field
+# function that checks length of input and adds zeros if not right length for field
 def check_length(class_elm, field_length):
 	if len(class_elm) == field_length:
 		return class_elm
@@ -87,7 +87,7 @@ def check_length(class_elm, field_length):
 		return '00' + class_elm
 	else:
 		print("Error: input length does not match field type")
-		return '.' * field_length
+		return '.' * field_length  # returns an empty string if length of class element is bigger than the field
 
 
 
